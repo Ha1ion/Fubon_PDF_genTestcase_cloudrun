@@ -1,6 +1,6 @@
-# PDF 處理與測試案例生成 API
+# PDF 處理與測試案例生成 Web App
 
-這是一個基於 Flask 的 Web 應用程式，旨在利用 Google Gemini 的強大功能處理 PDF 檔案，將其智能拆分為有意義的區塊，並生成結構化的測試案例，可實現彈性部署與擴展，並整合 Google Cloud Storage (GCS) 進行檔案的永久儲存。
+這是一個基於 Flask 的 Web 應用程式，旨在利用 Gemini 處理 PDF 檔案，將其智能分析並切割檔案，並生成客製化的測試案例，可實現彈性部署與擴展，並整合 Google Cloud Storage (GCS) 進行檔案儲存。
 
 ## ✨ 功能特色
 
@@ -75,7 +75,7 @@ GOOGLE_API_KEY="your-google-api-key"
 GCS_BUCKET_NAME="your-gcs-bucket-name"
 ```
 
-**4. 設定應用程式預設憑證 (ADC)**
+**4. 設定應用程式預設憑證 ADC（可選）**
 
 為了讓應用程式在本地能順利通過 Google Cloud 服務的身份驗證，您需要設定 ADC。
 
