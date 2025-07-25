@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>富邦 AI 測試案例產生器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0f4f8; }
+        .card { background-color: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); padding: 1.5rem; transition: all 0.3s ease-in-out; display: flex; flex-direction: column; }
+        .card-header { padding-bottom: 1rem; border-bottom: 1px solid #e5e7eb; margin-bottom: 1rem; }
+        .card-title { font-size: 1.125rem; font-weight: 700; color: #1f2937; }
+        .card-step { font-size: 0.875rem; color: #005AB5; font-weight: 600; }
+        .btn { padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 600; transition: all 0.2s; border: none; cursor: pointer; text-align: center; display: inline-flex; align-items: center; justify-content: center;}
+        .btn-primary { background-color: #005AB5; color: white; }
+        .btn-primary:hover:not(:disabled) { background-color: #00448C; }
+        .btn-secondary { background-color: #00A19B; color: white; }
+        .btn-secondary:hover:not(:disabled) { background-color: #007D78; }
+        .btn-link { color: #005AB5; background: none; padding: 0.25rem; }
+        .btn-link:hover { text-decoration: underline; }
+        .btn:disabled { background-color: #9ca3af; cursor: not-allowed; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #005AB5; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none; }
+        .disabled-ui { opacity: 0.5; pointer-events: none; }
+        textarea, input[type="text"], input[type="number"], select { width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.375rem; }
+        .sortable-ghost { background: #f0f4f8; opacity: 0.5; }
+        .sortable-chosen { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex items-center space-x-4 mb-6">
+            <img src="/static/fubon_logo.svg" alt="Fubon Logo" class="h-10 w-auto">
+            <div>
+                <h1 class="text-2xl font-bold text-[#005AB5]">富邦 AI 自動化測試平台</h1>
+                <p class="text-gray-600">一個解決方案:應對多樣、複雜且大型的規格書。</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <div id="col-1-pdf-split" class="card space-y-4">
+                <div class="card-header">
+                    <p class="card-step">STEP 1</p>
+                    <h2 class="card-title">PDF 下 Tag 與切割</h2>
+                </div>
+                <div id="pdf-upload-section">
+                    <p class="text-sm text-gray-600 mb-2">請上傳您的 PDF 規格書，AI 將自動為您分析結構並建議切割方案。</p>
+                    <div class="mb-4">
+                        <label for="model-select-1" class="font-medium text-sm text-gray-700">選擇分析模型：</label>
+                        <select id="model-select-1" class="model-select w-full mt-1 p-2" data-stage="1">
+                            <option value="models/gemini-2.5-flash">Gemini 2.5 Flash (推薦/快速)</option>
+                            <option value="models/gemini-2.5-pro">Gemini 2.5 Pro</option>
+                            <option value="custom">自訂模型</option>
+                        </select>
+                        <input type="text" id="custom-model-1" class="custom-model-input hidden w-full mt-2" placeholder="請輸入模型名稱，例如: models/gemini-pro">
+                    </div>
+                    <input type="file" id="pdf-file-input" name="pdf_file" class="w-full text-gray-700" accept=".pdf">
+                    <button id="upload-btn" class="btn btn-primary w-full mt-2">上傳並分析</button>
+                </div>
+                <div id="split-loader" class="hidden items-center justify-center space-x-4 text-gray-600">
+                    <div class="loader"></div>
+                    <span>正在分析 PDF 結構...</span>
+                    <button id="cancel-btn-1" class="btn btn-link text-sm text-red-600">取消</button>
+                </div>
+                
+                <div id="split-results-section" class="hidden space-y-3 flex-grow">
+                    <p class="text-sm font-medium text-gray-800">AI 建議的切割方案（可拖拉排序、編輯、更新或刪除）：</p>
+                    <div id="split-list" class="space-y-2 max-h-60 overflow-y-auto pr-2"></div>
+                    
+                    <div id="manual-split-section" class="pt-4 border-t">
+                        <p class="text-sm font-medium text-gray-800">或手動新增切割：</p>
+                        <div class="space-y-2 mt-2">
+                            <input type="text" id="manual-tag-input" placeholder="請輸入標籤名稱 (例如: 登入功能)">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" id="manual-start-page" placeholder="起始頁碼">
+                                <input type="number" id="manual-end-page" placeholder="結束頁碼">
+                            </div>
+                            <button id="add-manual-split-btn" class="btn btn-secondary w-full text-sm py-2">
+                                <span id="add-manual-split-text">新增手動切割</span>
+                                <div id="manual-split-loader" class="loader !w-5 !h-5 hidden"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button id="confirm-split-btn" class="btn btn-primary w-full mt-auto hidden">儲存編輯並進行下一步</button>
+            </div>
+
+            <div id="col-2-gen-example" class="card space-y-4 disabled-ui">
+                <div class="card-header">
+                    <p class="card-step">STEP 2</p>
+                    <h2 class="card-title">產生高品質範例 (Few-shot)</h2>
+                </div>
+                <div class="mb-2">
+                    <label for="model-select-2" class="font-medium text-sm text-gray-700">選擇範例生成模型：</label>
+                    <select id="model-select-2" class="model-select w-full mt-1 p-2" data-stage="2">
+                        <option value="models/gemini-2.5-pro">Gemini 2.5 Pro (推薦/高品質)</option>
+                        <option value="models/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                        <option value="custom">自訂模型</option>
+                    </select>
+                    <input type="text" id="custom-model-2" class="custom-model-input hidden w-full mt-2" placeholder="請輸入模型名稱...">
+                </div>
+                <div>
+                    <label for="split-select" class="font-medium text-sm text-gray-700">選擇功能區塊：</label>
+                    <select id="split-select" class="w-full mt-1 p-2"></select>
+                </div>
+                <button id="generate-example-btn" class="btn btn-secondary w-full">為此區塊生成範例</button>
+                <div id="example-loader" class="hidden items-center justify-center space-x-4 text-gray-600">
+                    <div class="loader"></div>
+                    <span>正在生成範例...</span>
+                    <button id="cancel-btn-2" class="btn btn-link text-sm text-red-600">取消</button>
+                </div>
+                <div class="flex-grow">
+                    <label for="example-textarea" class="font-medium text-sm text-gray-700">生成結果（可手動修改）：</label>
+                    <textarea id="example-textarea" rows="10" class="w-full mt-1 text-sm h-full" placeholder="點擊按鈕後，AI 生成的測試案例範例將顯示在此處..."></textarea>
+                </div>
+                <button id="confirm-example-btn" class="btn btn-primary w-full mt-auto">鎖定此範例並進行最終生成</button>
+            </div>
+
+            <div id="col-3-gen-final" class="card space-y-4 disabled-ui">
+                <div class="card-header">
+                    <p class="card-step">STEP 3</p>
+                    <h2 class="card-title">生成完整測試案例</h2>
+                </div>
+                <div class="mb-2">
+                    <label for="model-select-3" class="font-medium text-sm text-gray-700">選擇最終生成模型：</label>
+                    <select id="model-select-3" class="model-select w-full mt-1 p-2" data-stage="3">
+                        <option value="models/gemini-2.5-pro">Gemini 2.5 Pro (推薦/高品質)</option>
+                        <option value="models/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                        <option value="custom">自訂模型</option>
+                    </select>
+                    <input type="text" id="custom-model-3" class="custom-model-input hidden w-full mt-2" placeholder="請輸入模型名稱...">
+                </div>
+                
+                <div class="mb-2">
+                    <label for="final-source-select" class="font-medium text-sm text-gray-700">選擇生成來源：</label>
+                    <select id="final-source-select" class="w-full mt-1 p-2"></select>
+                </div>
+
+                <div class="p-4 bg-gray-50 rounded-md flex-grow">
+                    <p class="text-sm font-medium text-gray-700">目前使用的範例：</p>
+                    <pre id="final-example-preview" class="mt-2 text-xs text-gray-500 bg-white p-2 rounded max-h-48 overflow-y-auto">請先在第二步中生成並鎖定範例。</pre>
+                </div>
+                <button id="generate-final-btn" class="btn btn-primary w-full text-lg py-3 mt-auto">✨ 產生最終測試案例 (CSV)</button>
+                <div id="final-loader" class="hidden items-center justify-center space-x-4 text-gray-600">
+                    <div class="loader"></div>
+                    <span>正在生成完整測試案例...</span>
+                    <button id="cancel-btn-3" class="btn btn-link text-sm text-red-600">取消</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="message-area" class="mt-6 p-4 rounded-lg hidden text-center"></div>
+    </div>
+    
+    <template id="split-item-template">
+        <div class="split-item p-2 border rounded-md space-y-2 bg-gray-50 relative">
+            <div class="flex items-center space-x-2">
+                <svg class="drag-handle w-5 h-5 text-gray-400 cursor-move flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+                </svg>
+                <input type="text" class="tag-name-input text-md font-semibold bg-transparent border-none focus:ring-0" value="">
+            </div>
+            <div class="flex items-center space-x-2 text-sm pl-7">
+                <span>頁數:</span>
+                <input type="number" class="page-input page-start-input w-16 text-center" min="1">
+                <span>至</span>
+                <input type="number" class="page-input page-end-input w-16 text-center" min="1">
+                <div class="ml-auto flex items-center space-x-2">
+                    <div class="item-loader loader !w-4 !h-4 hidden"></div>
+                    <button class="update-split-btn btn btn-link text-sm !text-green-600 !p-1">更新</button>
+                    <a href="#" target="_blank" class="preview-btn btn btn-link text-sm !p-1">預覽</a>
+                    <button class="remove-split-btn text-red-500 hover:text-red-700 font-bold !p-1">✕</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+Flask
+google-generativeai
+python-dotenv
+PyMuPDF
+werkzeug
+gunicorn
+jedi
+google-cloud-storage
