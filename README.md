@@ -83,13 +83,6 @@ GCS_BUCKET_NAME="your-gcs-bucket-name"
 gcloud auth application-default login
 ```
 
-**5. 啟動 Flask 應用程式**
-```bash
-flask run
-```
-
-應用程式將在 `http://127.0.0.1:5000` 上啟動。
-
 ## 📂 專案結構
 
 ```
