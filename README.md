@@ -21,7 +21,7 @@
 
 **2. 建立 GCS 儲存桶**
 
-為您的專案建立一個 GCS 儲存桶。建議使用全域唯一的名稱。
+為您的專案建立一個 GCS 儲存桶。使用全域唯一的名稱。
 
 ```bash
 export BUCKET_NAME="your-unique-bucket-name"
