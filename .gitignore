@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+
+# Local uploads
+uploads/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
