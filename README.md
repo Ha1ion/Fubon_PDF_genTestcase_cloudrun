@@ -17,7 +17,6 @@
 **1. 前置需求**
 
 - 一個已啟用 Cloud Run、Cloud Build 和 Artifact Registry API 的 Google Cloud 專案。
-- 已安裝並完成身份驗證的 [Google Cloud CLI](https://cloud.google.com/sdk/docs/install)。
 - 一個用於儲存上傳檔案的 Google Cloud Storage (GCS) 儲存桶。
 
 **2. 建立 GCS 儲存桶**
@@ -48,7 +47,7 @@ gcloud run deploy your-service-name \
 
 ## 💻 如何在本機開發
 
-想在本地端進行開發或測試？請遵循以下步驟。
+想在本地端進行開發或測試，請遵循以下步驟。
 
 **1. 建立虛擬環境**
 ```bash
