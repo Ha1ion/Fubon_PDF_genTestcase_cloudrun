@@ -14,6 +14,12 @@
 
 依照以下步驟，您可以輕鬆將此應用程式部署到 Google Cloud Run。
 
+##  Prompt 說明
+
+- **Prompt 1** 為負責切PDF使用
+- **Prompt 2** 為產生幾個高品質測試案例(裡面包含的案例也重要，裡面的案例選得好產生的結果就會好)
+- **Prompt 3** 為產生最後CSV使用
+
 **1. 前置需求**
 
 - 一個已啟用 Cloud Run、Cloud Build 和 Artifact Registry API 的 Google Cloud 專案。
