@@ -10,15 +10,15 @@
 - **自動化案例生成**：根據原始文件或拆分後的區塊，一鍵生成 CSV 格式的測試案例，大幅提升工作效率。
 - **Google Cloud 整合**：與 Google Cloud Storage 無縫整合，確保您的檔案安全、可靠地儲存。
 
-## 🚀 如何部署到 Google Cloud Run
-
-依照以下步驟，您可以輕鬆將此應用程式部署到 Google Cloud Run。
-
 ##  Prompt 說明
 
 - **Prompt 1** 為負責切PDF使用
 - **Prompt 2** 為產生幾個高品質測試案例(裡面包含的案例也重要，裡面的案例選得好產生的結果就會好)
 - **Prompt 3** 為產生最後CSV使用
+
+## 🚀 如何部署到 Google Cloud Run
+
+依照以下步驟，您可以輕鬆將此應用程式部署到 Google Cloud Run。
 
 **1. 前置需求**
 
